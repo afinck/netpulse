@@ -1,5 +1,6 @@
 // filepath: /netpulse/netpulse/src/utils.rs
 use std::fmt;
+use chrono::{NaiveDateTime, Local, TimeZone};
 
 // Custom error type for the application
 #[derive(Debug)]
@@ -16,9 +17,13 @@ impl fmt::Display for AppError {
 impl std::error::Error for AppError {}
 
 // Utility function for formatting dates
-#[allow(dead_code)]
 pub fn format_date(date: &str) -> String {
-    // Placeholder for date formatting logic
+    // Try to parse the input date string as a NaiveDateTime
+    if let Ok(dt) = NaiveDateTime::parse_from_str(date, "%Y-%m-%d %H:%M:%S") {
+        // Format as 24h: "YYYY-MM-DD HH:MM:SS"
+        return dt.format("%Y-%m-%d %H:%M:%S").to_string();
+    }
+    // Fallback: return as-is
     date.to_string()
 }
 

@@ -7,7 +7,7 @@ use axum::{
     Router,
 };
 use std::sync::Arc;
-
+use crate::utils::format_date;
 use crate::measurements::get_measurements;
 use crate::pdf_export::export_to_pdf;
 use r2d2::Pool;
@@ -27,10 +27,19 @@ pub async fn measurements_handler(
     Extension(state): Extension<Arc<AppState>>,
 ) -> impl IntoResponse {
     let conn = state.db.get().unwrap();
-    // Call get_measurements with the database connection from state
     match get_measurements(&conn) {
-        Ok(measurements) => Json(measurements),
-        Err(_) => Json(vec![]), // or return an error response
+        Ok(measurements) => {
+            // Map each measurement, formatting the timestamp
+            let formatted: Vec<_> = measurements.into_iter().map(|m| {
+                serde_json::json!({
+                    "id": m.id,
+                    "value": m.value,
+                    "timestamp": format_date(&m.timestamp), // 24h format
+                })
+            }).collect();
+            Json(formatted)
+        },
+        Err(_) => Json(vec![]),
     }
 }
 

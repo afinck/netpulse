@@ -5,10 +5,6 @@ use std::time::Duration;
 use tokio::time::sleep;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
-use reqwest::Client;
-use std::time::Instant;
-use std::process::Command;
-use serde_json::Value;
 
 mod db;
 mod measurements;
@@ -18,7 +14,7 @@ mod web;
 
 use web::handlers::{AppState, create_routes};
 
-async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
+/* async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
     let url = "http://proof.ovh.net/files/512MB.dat"; // 1GB test file
     let client = Client::new();
     let start = std::time::Instant::now();
@@ -28,7 +24,7 @@ async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
     println!("Downloaded {} bytes in {:.2} seconds", bytes, elapsed);
     let mbits = (bytes as f64 * 8.0) / 1_000_000.0;
     Ok(mbits / elapsed) // Mbit/s
-}
+} */
 
 fn measure_bandwidth_speedtest() -> Option<f64> {
     let output = std::process::Command::new("speedtest")
