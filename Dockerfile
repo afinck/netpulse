@@ -1,4 +1,4 @@
-FROM rust:1.77-bullseye as builder
+FROM rustlang/rust:nightly-bullseye as builder
 
 # Install build dependencies
 RUN apt-get update && \
