@@ -1,0 +1,17 @@
+#!/bin/sh
+
+set -e
+
+# This script is executed after the package is installed.
+# You can add any post-installation commands here.
+
+# Example: Create a directory for logs
+mkdir -p /var/log/netpulse
+
+# Example: Set permissions for the log directory
+chown www-data:www-data /var/log/netpulse
+
+# Example: Start the netpulse service (if applicable)
+# systemctl start netpulse.service
+
+exit 0
