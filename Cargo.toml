@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = "0.6"
+axum = { version = "0.6", features = ["tokio", "macros", "headers"] }
 tokio = { version = "1", features = ["full"] }
 printpdf = "0.7"
 serde = { version = "1", features = ["derive"] }
@@ -14,7 +14,7 @@ rusqlite = "0.30"
 r2d2 = "0.8"
 r2d2_sqlite = "0.23"
 reqwest = { version = "0.11", features = [ "json", "blocking", "rustls-tls"]}
-
+tower-http = { version = "0.4", features = ["fs"] }
 
 [build-dependencies]
 cargo-deb = "1.36"

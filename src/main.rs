@@ -17,7 +17,7 @@ mod web;
 use web::handlers::{AppState, create_routes};
 
 async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
-    let url = "https://speed.hetzner.de/100MB.bin"; // Example test file
+    let url = "http://ipv4.download.thinkbroadband.com/10MB.zip"; // Smaller file, reliable host
     let client = Client::new();
     let start = Instant::now();
     let resp = client.get(url).send().await?;
@@ -52,14 +52,22 @@ async fn main() {
     tokio::spawn(async move {
         loop {
             if let Ok(conn) = pool.get() {
-                if let Ok(bandwidth) = measure_bandwidth().await {
-                    let _ = conn.execute(
-                        "INSERT INTO measurements (value, timestamp) VALUES (?1, datetime('now'))",
-                        &[&bandwidth],
-                    );
+                match measure_bandwidth().await {
+                    Ok(bandwidth) => {
+                        match conn.execute(
+                            "INSERT INTO measurements (value, timestamp) VALUES (?1, datetime('now'))",
+                            &[&bandwidth],
+                        ) {
+                            Ok(rows) => println!("Inserted measurement: {} Mbit/s (rows affected: {})", bandwidth, rows),
+                            Err(e) => eprintln!("DB insert error: {}", e),
+                        }
+                    }
+                    Err(e) => eprintln!("Bandwidth measurement error: {}", e),
                 }
+            } else {
+                eprintln!("Failed to get DB connection from pool");
             }
-            sleep(Duration::from_secs(60)).await; // measure every 60 seconds
+            sleep(Duration::from_secs(60)).await;
         }
     });
 

@@ -1,23 +1,18 @@
 // filepath: /netpulse/netpulse/static/app.js
 document.addEventListener('DOMContentLoaded', function() {
-    const fetchDataButton = document.getElementById('fetch-data');
-    const chartContainer = document.getElementById('chart-container');
-
-    fetchDataButton.addEventListener('click', function() {
-        fetch('/api/measurements')
-            .then(response => response.json())
-            .then(data => {
-                renderChart(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
-    });
+    const fetchDataButton = document.getElementById('exportPdf');
+    const chartContainer = document.getElementById('measurementChart');
 
     function renderChart(data) {
+        if (!chartContainer) {
+            console.error("No chart container found!");
+            return;
+        }
         const ctx = document.createElement('canvas');
         chartContainer.innerHTML = ''; // Clear previous chart
         chartContainer.appendChild(ctx);
 
-        const chart = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'line',
             data: {
                 labels: data.map(entry => entry.timestamp),
@@ -44,5 +39,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
+    }
+
+    function fetchAndRender() {
+        fetch('/measurements')
+            .then(response => response.json())
+            .then(data => {
+                renderChart(data);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    // Load chart on page load
+    fetchAndRender();
+
+    // Also allow manual refresh via button
+    if (fetchDataButton) {
+        fetchDataButton.addEventListener('click', fetchAndRender);
     }
 });

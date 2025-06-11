@@ -12,6 +12,7 @@ use crate::measurements::get_measurements;
 use crate::pdf_export::export_to_pdf;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
+use tower_http::services::ServeDir;
 
 /// Shared application state, e.g. database connection pool
 pub struct AppState {
@@ -52,5 +53,6 @@ pub fn create_routes(state: Arc<AppState>) -> Router {
         .route("/", get(dashboard_handler))
         .route("/measurements", get(measurements_handler))
         .route("/export/pdf", get(pdf_export_handler))
+        .nest_service("/static", ServeDir::new("static"))
         .layer(Extension(state))
 }
