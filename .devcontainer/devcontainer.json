@@ -6,11 +6,15 @@
   },
   "workspaceFolder": "/workspace/netpulse",
   "forwardPorts": [3000],
-  "settings": {
-    "terminal.integrated.defaultProfile.linux": "bash"
-  },
-  "extensions": [
-    "rust-lang.rust-analyzer",
-    "ms-azuretools.vscode-docker"
-  ]
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash"
+      },
+      "extensions": [
+        "rust-lang.rust-analyzer",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
 }
