@@ -6,12 +6,11 @@ use axum::{
     http::header,
     Router,
 };
-use serde_json::json;
 use std::sync::Arc;
 
-use crate::measurements::{get_measurements, Measurement};
+use crate::measurements::get_measurements;
 use crate::pdf_export::export_to_pdf;
-use r2d2::{Pool, PooledConnection};
+use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
 /// Shared application state, e.g. database connection pool

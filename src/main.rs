@@ -1,5 +1,4 @@
 // filepath: /netpulse/netpulse/src/main.rs
-use axum::Router;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use r2d2::Pool;

@@ -1,5 +1,5 @@
 // filepath: /netpulse/netpulse/src/pdf_export.rs
-use printpdf::{PdfDocument, PdfPage, IndirectFontRef, PdfDocumentReference};
+use printpdf::PdfDocument;
 use std::fs::File;
 use std::io::BufWriter;
 
