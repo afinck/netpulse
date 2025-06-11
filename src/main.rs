@@ -7,6 +7,8 @@ use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use reqwest::Client;
 use std::time::Instant;
+use std::process::Command;
+use serde_json::Value;
 
 mod db;
 mod measurements;
@@ -17,14 +19,30 @@ mod web;
 use web::handlers::{AppState, create_routes};
 
 async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
-    let url = "http://ipv4.download.thinkbroadband.com/10MB.zip"; // Smaller file, reliable host
+    let url = "http://proof.ovh.net/files/512MB.dat"; // 1GB test file
     let client = Client::new();
-    let start = Instant::now();
+    let start = std::time::Instant::now();
     let resp = client.get(url).send().await?;
     let bytes = resp.bytes().await?.len();
     let elapsed = start.elapsed().as_secs_f64();
+    println!("Downloaded {} bytes in {:.2} seconds", bytes, elapsed);
     let mbits = (bytes as f64 * 8.0) / 1_000_000.0;
     Ok(mbits / elapsed) // Mbit/s
+}
+
+fn measure_bandwidth_speedtest() -> Option<f64> {
+    let output = Command::new("speedtest")
+        .arg("--format=json")
+        .output()
+        .ok()?;
+    if !output.status.success() {
+        eprintln!("Speedtest CLI failed: {:?}", output);
+        return None;
+    }
+    let json: Value = serde_json::from_slice(&output.stdout).ok()?;
+    // Download bandwidth in bits per second
+    let bps = json.get("download")?.get("bandwidth")?.as_f64()?;
+    Some(bps / 1_000_000.0) // Convert to Mbit/s
 }
 
 #[tokio::main]
@@ -52,22 +70,24 @@ async fn main() {
     tokio::spawn(async move {
         loop {
             if let Ok(conn) = pool.get() {
-                match measure_bandwidth().await {
-                    Ok(bandwidth) => {
-                        match conn.execute(
-                            "INSERT INTO measurements (value, timestamp) VALUES (?1, datetime('now'))",
-                            &[&bandwidth],
-                        ) {
-                            Ok(rows) => println!("Inserted measurement: {} Mbit/s (rows affected: {})", bandwidth, rows),
-                            Err(e) => eprintln!("DB insert error: {}", e),
-                        }
+                let bandwidth = tokio::task::spawn_blocking(|| measure_bandwidth_speedtest())
+                    .await
+                    .unwrap_or(None);
+                if let Some(bandwidth) = bandwidth {
+                    match conn.execute(
+                        "INSERT INTO measurements (value, timestamp) VALUES (?1, datetime('now'))",
+                        &[&bandwidth],
+                    ) {
+                        Ok(rows) => println!("Inserted measurement: {} Mbit/s (rows affected: {})", bandwidth, rows),
+                        Err(e) => eprintln!("DB insert error: {}", e),
                     }
-                    Err(e) => eprintln!("Bandwidth measurement error: {}", e),
+                } else {
+                    eprintln!("Speedtest failed or returned no result");
                 }
             } else {
                 eprintln!("Failed to get DB connection from pool");
             }
-            sleep(Duration::from_secs(60)).await;
+            sleep(Duration::from_secs(3600)).await; // Run every hour
         }
     });
 

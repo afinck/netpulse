@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: data.map(entry => entry.timestamp),
                 datasets: [{
-                    label: 'Measurements',
+                    label: 'Bandwidth (Mbit/s)', // <-- Make it clear!
                     data: data.map(entry => entry.value),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
@@ -34,7 +34,11 @@ document.addEventListener('DOMContentLoaded', function() {
                         }
                     },
                     y: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Mbit/s' // <-- Y-axis label
+                        }
                     }
                 }
             }

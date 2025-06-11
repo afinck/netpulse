@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NetPulse Dashboard</title>
-    <link rel="stylesheet" href="static/style.css">
-    <script src="static/chart.js"></script>
-    <script src="static/app.js" defer></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+    <script src="/static/chart.min.js"></script>
+    <script src="/static/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="/static/app.js" defer></script>
 </head>
 <body>
     <header>
@@ -15,7 +17,9 @@
     <main>
         <section id="measurements">
             <h2>Measurements</h2>
+            <div id="measurementChart">
             <canvas id="measurementsChart"></canvas>
+            </div>
         </section>
         <section id="export">
             <h2>Export Data</h2>
