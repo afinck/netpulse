@@ -1,5 +1,5 @@
 // filepath: /netpulse/netpulse/src/measurements.rs
-use rusqlite::{params, Connection, Result};
+use rusqlite::{Connection, Result};
 
 #[derive(serde::Serialize)]
 pub struct Measurement {
