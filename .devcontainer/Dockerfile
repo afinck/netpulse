@@ -1,6 +1,6 @@
 FROM rustlang/rust:nightly-bullseye
 
-WORKDIR /workspace/netpulse
+WORKDIR /workspaces/netpulse
 
 RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev sqlite3 libsqlite3-dev curl gnupg

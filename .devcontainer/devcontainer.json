@@ -2,9 +2,9 @@
   "name": "Netpulse Rust Dev",
   "build": {
     "dockerfile": "Dockerfile",
-    "context": ".."
+    "context": "."
   },
-  "workspaceFolder": "/workspace/netpulse",
+  "workspaceFolder": "/workspaces/netpulse",
   "forwardPorts": [3000],
   "customizations": {
     "vscode": {
