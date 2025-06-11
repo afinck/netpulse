@@ -1,0 +1,16 @@
+{
+  "name": "Netpulse Rust Dev",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "workspaceFolder": "/workspace/netpulse",
+  "forwardPorts": [3000],
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "rust-lang.rust-analyzer",
+    "ms-azuretools.vscode-docker"
+  ]
+}

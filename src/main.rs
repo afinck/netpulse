@@ -31,7 +31,9 @@ async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
 }
 
 fn measure_bandwidth_speedtest() -> Option<f64> {
-    let output = Command::new("speedtest")
+    let output = std::process::Command::new("speedtest")
+        .arg("--accept-license")
+        .arg("--accept-gdpr")
         .arg("--format=json")
         .output()
         .ok()?;
@@ -39,8 +41,7 @@ fn measure_bandwidth_speedtest() -> Option<f64> {
         eprintln!("Speedtest CLI failed: {:?}", output);
         return None;
     }
-    let json: Value = serde_json::from_slice(&output.stdout).ok()?;
-    // Download bandwidth in bits per second
+    let json: serde_json::Value = serde_json::from_slice(&output.stdout).ok()?;
     let bps = json.get("download")?.get("bandwidth")?.as_f64()?;
     Some(bps / 1_000_000.0) // Convert to Mbit/s
 }
@@ -95,7 +96,7 @@ async fn main() {
     let app = create_routes(state);
 
     // Address festlegen
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3000));
+    let addr = SocketAddr::from(([0, 0, 0, 0], 3000));
     println!("Listening on http://{}", addr);
 
     // Server starten

@@ -4,9 +4,12 @@ FROM rustlang/rust:nightly-bullseye as builder
 RUN apt-get update && \
     apt-get install -y pkg-config libssl-dev sqlite3 libsqlite3-dev curl gnupg
 
-# Install Speedtest CLI (Ookla)
-RUN curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash && \
-    apt-get install -y speedtest
+# Download and install Speedtest CLI (Ookla) directly
+RUN set -eux; \
+    curl -Lo /tmp/speedtest.tgz https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz; \
+    tar -xzf /tmp/speedtest.tgz -C /usr/local/bin speedtest; \
+    chmod +x /usr/local/bin/speedtest; \
+    rm /tmp/speedtest.tgz
 
 # Create app directory
 WORKDIR /app
@@ -20,15 +23,15 @@ FROM debian:bookworm-slim
 
 # Install runtime dependencies
 RUN apt-get update && \
-    apt-get install -y libssl3 ca-certificates sqlite3 && \
+    apt-get install -y libssl3 ca-certificates sqlite3 curl && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Speedtest CLI (Ookla) in runtime image
-RUN apt-get update && \
-    apt-get install -y curl gnupg && \
-    curl -s https://install.speedtest.net/app/cli/install.deb.sh | bash && \
-    apt-get install -y speedtest && \
-    rm -rf /var/lib/apt/lists/*
+# Download and install Speedtest CLI (Ookla) directly
+RUN set -eux; \
+    curl -Lo /tmp/speedtest.tgz https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-x86_64.tgz; \
+    tar -xzf /tmp/speedtest.tgz -C /usr/local/bin speedtest; \
+    chmod +x /usr/local/bin/speedtest; \
+    rm /tmp/speedtest.tgz
 
 WORKDIR /app
 
