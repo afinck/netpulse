@@ -16,12 +16,14 @@ impl fmt::Display for AppError {
 impl std::error::Error for AppError {}
 
 // Utility function for formatting dates
+#[allow(dead_code)]
 pub fn format_date(date: &str) -> String {
     // Placeholder for date formatting logic
     date.to_string()
 }
 
 // Utility function for handling errors
+#[allow(dead_code)]
 pub fn handle_error<E: std::error::Error>(err: E) -> AppError {
     AppError {
         message: err.to_string(),
