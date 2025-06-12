@@ -1,9 +1,29 @@
 // filepath: /netpulse/netpulse/static/app.js
 document.addEventListener('DOMContentLoaded', function() {
-    const fetchDataButton = document.getElementById('exportPdf');
     const chartContainer = document.getElementById('measurementChart');
+    const dateLabelDiv = document.getElementById('dateLabel');
+    const rangeButtons = document.querySelectorAll('.range-selector button');
+    let currentRange = 'day';
 
-    function renderChart(data) {
+    function fetchAndRender(range = 'day') {
+        fetch(`/measurements?range=${range}`)
+            .then(response => response.json())
+            .then(data => {
+                renderChart(data, range);
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    }
+
+    rangeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            rangeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentRange = btn.getAttribute('data-range');
+            fetchAndRender(currentRange);
+        });
+    });
+
+    function renderChart(data, range) {
         if (!chartContainer) {
             console.error("No chart container found!");
             return;
@@ -11,6 +31,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.createElement('canvas');
         chartContainer.innerHTML = ''; // Clear previous chart
         chartContainer.appendChild(ctx);
+
+        // Determine the date or date range for the x-axis title
+        let xAxisTitle = '';
+        if (data.length > 0) {
+            const first = data[0].timestamp.split('T')[0];
+            const last = data[data.length - 1].timestamp.split('T')[0];
+            xAxisTitle = (first === last) ? first : `${first} – ${last}`;
+        }
 
         new Chart(ctx, {
             type: 'line',
@@ -48,7 +76,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         },
                         title: {
                             display: true,
-                            text: 'Timestamp (24h)'
+                            text: xAxisTitle, // plain text only!
+                            font: {
+                                weight: 'bold', // makes it bold
+                                size: 16
+                            },
+                            padding: { top: 18 } // more space above
                         },
                         ticks: {
                             callback: function(value) {
@@ -75,40 +108,19 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Remove previous date labels if any
-        const oldDateLabels = document.querySelectorAll('.chart-date-label');
-        oldDateLabels.forEach(el => el.remove());
-
-        // Find unique dates in the data, sorted
-        const uniqueDates = [...new Set(data.map(entry => (entry.timestamp.split('T')[0] || entry.timestamp.split(' ')[0])))];
-
-        // Create a single label with all dates, separated by " / " if more than one
-        const dateLabel = document.createElement('div');
-        dateLabel.className = 'chart-date-label';
-        dateLabel.style.textAlign = 'center';
-        dateLabel.style.marginTop = '16px';
-        dateLabel.style.fontWeight = 'bold';
-        dateLabel.style.fontSize = '1.1em';
-        dateLabel.textContent = uniqueDates.join(' / ');
-
-        // Insert the date label AFTER the chart canvas
-        chartContainer.appendChild(dateLabel);
+        if (dateLabelDiv) {
+            dateLabelDiv.textContent = '';
+        }
     }
 
-    function fetchAndRender() {
-        fetch('/measurements')
-            .then(response => response.json())
-            .then(data => {
-                renderChart(data);
-            })
-            .catch(error => console.error('Error fetching data:', error));
+    // Add this for the Export Data button
+    const exportBtn = document.getElementById('exportPdf');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', function() {
+            window.open('/export/pdf', '_blank');
+        });
     }
 
-    // Load chart on page load
-    fetchAndRender();
-
-    // Also allow manual refresh via button
-    if (fetchDataButton) {
-        fetchDataButton.addEventListener('click', fetchAndRender);
-    }
+    // Initial load
+    fetchAndRender(currentRange);
 });

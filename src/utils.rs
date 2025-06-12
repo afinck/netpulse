@@ -1,6 +1,6 @@
 // filepath: /netpulse/netpulse/src/utils.rs
 use std::fmt;
-use chrono::{NaiveDateTime, Local, TimeZone};
+use chrono::NaiveDateTime;
 
 // Custom error type for the application
 #[derive(Debug)]

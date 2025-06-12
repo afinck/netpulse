@@ -11,21 +11,28 @@
     <script src="/static/app.js" defer></script>
 </head>
 <body>
-    <header>
-        <h1>NetPulse Dashboard</h1>
-    </header>
-    <main>
-        <section id="measurements">
-            <h2>Measurements</h2>
-            <div id="measurementChart">
-            <canvas id="measurementsChart"></canvas>
-            </div>
-        </section>
-        <section id="export">
-            <h2>Export Data</h2>
-            <button id="exportPdf">Export as PDF</button>
-        </section>
+    <div class="header-bar">
+        <span style="font-size:1.3em;font-weight:bold;">NetPulse</span>
+        <div class="nav-links">
+            <!-- Future links/buttons go here -->
+            <button id="exportPdf">Export Data</button>
+        </div>
+    </div>
+
+    <main style="max-width:900px;margin:32px auto;">
+        <h2>Bandwidth Measurements</h2>
+        <div class="range-selector">
+            <button data-range="day">Day</button>
+            <button data-range="week">Week</button>
+            <button data-range="month">Month</button>
+            <button data-range="year">Year</button>
+        </div>
+        <div id="chartArea">
+            <div id="measurementChart"></div>
+            <div id="dateLabel"></div>
+        </div>
     </main>
+
     <footer>
         <p>&copy; 2024 NetPulse</p>
     </footer>

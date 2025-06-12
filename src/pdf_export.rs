@@ -1,21 +1,29 @@
 // filepath: /netpulse/netpulse/src/pdf_export.rs
-use printpdf::PdfDocument;
-use std::fs::File;
-use std::io::BufWriter;
+use std::io::Write;
+use printpdf::*;
+use std::io::{BufWriter, Cursor};
+use serde_json;
 
-pub fn export_to_pdf(data: &str, file_path: &str) -> Result<(), Box<dyn std::error::Error>> {
-    let (doc, page1, layer1) = PdfDocument::new("Measurement Data", printpdf::Mm(300.0), printpdf::Mm(300.0), "Layer 1");
-    let layer = doc.get_page(page1).get_layer(layer1);
+pub fn export_to_pdf(data: &serde_json::Value, _file_path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    let (doc, page1, layer1) = PdfDocument::new("Export", Mm(210.0), Mm(297.0), "Layer 1");
+    let current_layer = doc.get_page(page1).get_layer(layer1);
 
-    let font = doc.add_external_font(File::open("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")?)?;
-    layer.set_font(&font, 48.0);
-    layer.write_text(data, &font);
+    let font = doc.add_builtin_font(BuiltinFont::Helvetica)?;
+    let pretty_text = serde_json::to_string_pretty(&data)?;
+    current_layer.use_text(&pretty_text, 12.0, Mm(10.0), Mm(287.0), &font);
 
-    let file = File::create(file_path)?;
-    let mut writer = BufWriter::new(file);
+    let mut buffer = Cursor::new(Vec::new());
+    let mut writer = BufWriter::new(&mut buffer);
     doc.save(&mut writer)?;
+    writer.flush()?;
+    drop(writer); // Explicitly drop writer before using buffer
 
-    Ok(())
+    Ok(buffer.into_inner())
 }
 
 // Additional functions for HTML to PDF conversion can be added here.
+
+pub fn convert_json_to_pdf(json_string: &str, file_path: &str) -> Vec<u8> {
+    let json_value: serde_json::Value = serde_json::from_str(&json_string).unwrap();
+    export_to_pdf(&json_value, file_path).unwrap_or_default()
+}

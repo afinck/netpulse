@@ -2,7 +2,7 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::time::{interval, sleep};
+use tokio::time::interval;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
