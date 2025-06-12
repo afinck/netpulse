@@ -20,8 +20,8 @@ impl std::error::Error for AppError {}
 pub fn format_date(date: &str) -> String {
     // Try to parse the input date string as a NaiveDateTime
     if let Ok(dt) = NaiveDateTime::parse_from_str(date, "%Y-%m-%d %H:%M:%S") {
-        // Format as 24h: "YYYY-MM-DD HH:MM:SS"
-        return dt.format("%Y-%m-%d %H:%M:%S").to_string();
+        // Output ISO 8601 for Chart.js compatibility
+        return dt.format("%Y-%m-%dT%H:%M:%S").to_string();
     }
     // Fallback: return as-is
     date.to_string()

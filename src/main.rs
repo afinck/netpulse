@@ -2,7 +2,7 @@
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
-use tokio::time::sleep;
+use tokio::time::{interval, sleep};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
@@ -13,18 +13,6 @@ mod utils;
 mod web;
 
 use web::handlers::{AppState, create_routes};
-
-/* async fn measure_bandwidth() -> Result<f64, reqwest::Error> {
-    let url = "http://proof.ovh.net/files/512MB.dat"; // 1GB test file
-    let client = Client::new();
-    let start = std::time::Instant::now();
-    let resp = client.get(url).send().await?;
-    let bytes = resp.bytes().await?.len();
-    let elapsed = start.elapsed().as_secs_f64();
-    println!("Downloaded {} bytes in {:.2} seconds", bytes, elapsed);
-    let mbits = (bytes as f64 * 8.0) / 1_000_000.0;
-    Ok(mbits / elapsed) // Mbit/s
-} */
 
 fn measure_bandwidth_speedtest() -> Option<f64> {
     let output = std::process::Command::new("speedtest")
@@ -62,29 +50,23 @@ async fn main() {
 
     let state = Arc::new(AppState { db: pool });
 
-    // Clone pool for background task
-    let pool = state.db.clone();
+    // Clone your DB pool or app state as needed
+    let db_pool = Arc::new(state.db.clone());
+
+    // Spawn periodic speedtest task
+    let db_pool_clone = db_pool.clone();
     tokio::spawn(async move {
+        let mut ticker = interval(Duration::from_secs(1800)); // 30 minutes
         loop {
-            if let Ok(conn) = pool.get() {
-                let bandwidth = tokio::task::spawn_blocking(|| measure_bandwidth_speedtest())
-                    .await
-                    .unwrap_or(None);
-                if let Some(bandwidth) = bandwidth {
-                    match conn.execute(
-                        "INSERT INTO measurements (value, timestamp) VALUES (?1, datetime('now'))",
-                        &[&bandwidth],
-                    ) {
-                        Ok(rows) => println!("Inserted measurement: {} Mbit/s (rows affected: {})", bandwidth, rows),
-                        Err(e) => eprintln!("DB insert error: {}", e),
-                    }
-                } else {
-                    eprintln!("Speedtest failed or returned no result");
-                }
+            ticker.tick().await;
+            if let Some(bandwidth) = measure_bandwidth_speedtest() {
+                // Save to DB (replace with your actual insert logic)
+                let conn = db_pool_clone.get().unwrap();
+                crate::measurements::insert_measurement(&conn, bandwidth).ok();
+                println!("Speedtest result saved: {} Mbit/s", bandwidth);
             } else {
-                eprintln!("Failed to get DB connection from pool");
+                eprintln!("Speedtest failed");
             }
-            sleep(Duration::from_secs(3600)).await; // Run every hour
         }
     });
 

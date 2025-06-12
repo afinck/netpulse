@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
             data: {
                 labels: data.map(entry => entry.timestamp),
                 datasets: [{
-                    label: 'Bandwidth (Mbit/s)', // <-- Make it clear!
+                    label: 'Bandwidth (Mbit/s)',
                     data: data.map(entry => entry.value),
                     borderColor: 'rgba(75, 192, 192, 1)',
                     borderWidth: 1,
@@ -34,8 +34,15 @@ document.addEventListener('DOMContentLoaded', function() {
                         time: {
                             unit: 'minute',
                             displayFormats: {
+                                millisecond: 'HH:mm',
+                                second: 'HH:mm',
                                 minute: 'HH:mm',
-                                hour: 'HH:mm'
+                                hour: 'HH:mm',
+                                day: 'HH:mm',
+                                week: 'HH:mm',
+                                month: 'HH:mm',
+                                quarter: 'HH:mm',
+                                year: 'HH:mm'
                             },
                             tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
                         },
@@ -44,17 +51,16 @@ document.addEventListener('DOMContentLoaded', function() {
                             text: 'Timestamp (24h)'
                         },
                         ticks: {
-                            callback: function(value, index, ticks) {
-                                // Only show time, never date
+                            callback: function(value) {
                                 const date = new Date(value);
                                 return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
                             },
                             maxRotation: 0,
                             minRotation: 0,
                             autoSkip: true,
-                            maxTicksLimit: 8, // Try reducing this further if labels still overlap
+                            maxTicksLimit: 8,
                             major: {
-                                enabled: false // Prevents Chart.js from emphasizing certain ticks
+                                enabled: false
                             }
                         }
                     },
@@ -80,9 +86,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const dateLabel = document.createElement('div');
         dateLabel.className = 'chart-date-label';
         dateLabel.style.textAlign = 'center';
-        dateLabel.style.marginTop = '8px';
+        dateLabel.style.marginTop = '16px';
         dateLabel.style.fontWeight = 'bold';
+        dateLabel.style.fontSize = '1.1em';
         dateLabel.textContent = uniqueDates.join(' / ');
+
+        // Insert the date label AFTER the chart canvas
         chartContainer.appendChild(dateLabel);
     }
 
