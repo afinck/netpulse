@@ -1,4 +1,4 @@
-name: Build aarch64 DEB
+name: Build aarch64 DEB with cross
 
 on:
   push:
@@ -14,15 +14,12 @@ jobs:
       - name: Install Rust and cargo-deb
         run: |
           rustup target add aarch64-unknown-linux-gnu
-          cargo install cargo-deb
+          cargo install cargo-deb cross
 
-      - name: Install cross toolchain
-        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu libssl-dev pkg-config libssl-dev:arm64
-
-      - name: Build DEB for aarch64
+      - name: Build with cross for aarch64
         run: |
-          cargo build --release --target=aarch64-unknown-linux-gnu
-          cargo deb --target=aarch64-unknown-linux-gnu
+          cross build --release --target=aarch64-unknown-linux-gnu
+          cross run --target=aarch64-unknown-linux-gnu -- cargo deb --target=aarch64-unknown-linux-gnu
 
       - name: Upload DEB artifact
         uses: actions/upload-artifact@v4
