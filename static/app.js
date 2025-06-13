@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const dateLabelDiv = document.getElementById('dateLabel');
     const rangeButtons = document.querySelectorAll('.range-selector button');
     let currentRange = 'day';
+    let chartInstance = null; // Store the chart instance here
 
     function fetchAndRender(range = 'day') {
         fetch(`/measurements?range=${range}`)
@@ -13,43 +14,47 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => console.error('Error fetching data:', error));
     }
-
-    rangeButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            rangeButtons.forEach(b => b.classList.remove('active'));
+    // Range button logic
+    document.querySelectorAll('.range-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            currentRange = btn.getAttribute('data-range');
-            fetchAndRender(currentRange);
+            fetchAndRender(btn.dataset.range);
         });
     });
 
+
     function renderChart(data, range) {
-        if (!chartContainer) {
-            console.error("No chart container found!");
-            return;
-        }
-        const ctx = document.createElement('canvas');
-        chartContainer.innerHTML = ''; // Clear previous chart
-        chartContainer.appendChild(ctx);
+        const chartContainer = document.getElementById('chartContainer');
+        chartContainer.innerHTML = '';
+        const canvas = document.createElement('canvas');
+        canvas.id = 'myChart';
+        canvas.width = 800;
+        canvas.height = 400;
+        chartContainer.appendChild(canvas);
 
-        // Determine the date or date range for the x-axis title
-        let xAxisTitle = '';
-        if (data.length > 0) {
-            const first = data[0].timestamp.split('T')[0];
-            const last = data[data.length - 1].timestamp.split('T')[0];
-            xAxisTitle = (first === last) ? first : `${first} – ${last}`;
+        if (window.chartInstance) {
+            window.chartInstance.destroy();
         }
 
-        new Chart(ctx, {
+        let timeUnit = 'hour';
+        if (range === 'week' || range === 'month') {
+            timeUnit = 'day';
+        } else if (range === 'year') {
+            timeUnit = 'month';
+        }
+
+        const ctx = canvas.getContext('2d');
+        chartInstance = new Chart(ctx, {
             type: 'line',
             data: {
-                labels: data.map(entry => entry.timestamp),
                 datasets: [{
-                    label: 'Bandwidth (Mbit/s)',
-                    data: data.map(entry => entry.value),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1,
-                    fill: false
+                    label: 'Bandwidth',
+                    data: data.map(d => ({ x: d.timestamp, y: d.value })),
+                    borderColor: '#88c0d0',
+                    backgroundColor: 'rgba(136,192,208,0.2)',
+                    tension: 0.2,
+                    pointRadius: 2
                 }]
             },
             options: {
@@ -57,48 +62,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 scales: {
                     x: {
                         type: 'time',
-                        bounds: 'ticks',
-                        offset: false,
                         time: {
-                            unit: 'minute',
+                            unit: timeUnit,
                             displayFormats: {
-                                millisecond: 'HH:mm',
-                                second: 'HH:mm',
-                                minute: 'HH:mm',
                                 hour: 'HH:mm',
-                                day: 'HH:mm',
-                                week: 'HH:mm',
-                                month: 'HH:mm',
-                                quarter: 'HH:mm',
-                                year: 'HH:mm'
-                            },
-                            tooltipFormat: 'yyyy-MM-dd HH:mm:ss'
+                                day: 'MMM d',
+                                month: 'MMM yyyy'
+                            }
                         },
                         title: {
                             display: true,
-                            text: xAxisTitle, // plain text only!
-                            font: {
-                                weight: 'bold', // makes it bold
-                                size: 16
-                            },
-                            padding: { top: 18 } // more space above
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                const date = new Date(value);
-                                return date.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
-                            },
-                            maxRotation: 0,
-                            minRotation: 0,
-                            autoSkip: true,
-                            maxTicksLimit: 8,
-                            major: {
-                                enabled: false
-                            }
+                            text: 'Date'
                         }
                     },
                     y: {
-                        beginAtZero: true,
                         title: {
                             display: true,
                             text: 'Mbit/s'
@@ -113,11 +90,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Add this for the Export Data button
-    const exportBtn = document.getElementById('exportPdf');
-    if (exportBtn) {
-        exportBtn.addEventListener('click', function() {
-            window.open('/export/pdf', '_blank');
+    // Add this for the Download Chart button
+    const downloadBtn = document.getElementById('downloadChart');
+    if (downloadBtn) {
+        downloadBtn.addEventListener('click', function() {
+            if (chartInstance) {
+                const link = document.createElement('a');
+                link.href = chartInstance.toBase64Image({ type: 'image/jpeg', quality: 1.0, pixelRatio: 2 }); // pixelRatio for sharpness
+                link.download = 'chart.jpg';
+                link.click();
+            } else {
+                alert('Please generate the chart first.');
+            }
+        });
+    }
+
+    // Add this for the Export Chart as PDF button
+    const exportChartBtn = document.getElementById('exportChartPdf');
+    if (exportChartBtn) {
+        exportChartBtn.addEventListener('click', function() {
+            if (chartInstance) {
+                const imgData = chartInstance.toBase64Image();
+                const pdf = new window.jspdf.jsPDF();
+                pdf.addImage(imgData, 'PNG', 10, 10, 180, 100); // adjust size/position as needed
+                pdf.save('chart.pdf');
+            } else {
+                alert('Please generate the chart first.');
+            }
         });
     }
 

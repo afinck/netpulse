@@ -6,7 +6,6 @@ use tokio::time::interval;
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 
-mod db;
 mod measurements;
 mod pdf_export;
 mod utils;
@@ -46,6 +45,11 @@ async fn main() {
             )",
             [],
         ).expect("Failed to create measurements table");
+
+        conn.execute(
+            "CREATE INDEX IF NOT EXISTS idx_measurements_timestamp ON measurements(timestamp);",
+            [],
+        ).expect("Failed to create index on measurements table");
     }
 
     let state = Arc::new(AppState { db: pool });

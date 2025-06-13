@@ -1,23 +1,129 @@
 body {
+    background: linear-gradient(135deg, #23272e 0%, #2d323b 100%);
+    color: #f5f6fa;
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f8fb;
     margin: 0;
-    padding: 0;
-    color: #222;
+    min-height: 100vh;
 }
 
-header {
-    background: #007bff;
-    color: #fff;
-    padding: 2rem 0 1rem 0;
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.card {
+    background: rgba(45, 50, 59, 0.98);
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), 0 1.5px 0 #5e81ac inset;
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    max-width: 650px;
+    width: 100%;
+    margin: 2rem 0;
+    border: 2.5px solid #5e81ac;
+    position: relative;
+    overflow: hidden;
+}
+
+h1 {
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin-bottom: 0.2rem;
+    letter-spacing: 3px;
+    color: #88c0d0;
+    text-shadow: 0 2px 12px #2e3440, 0 0 2px #5e81ac;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
-header h1 {
-    margin: 0;
-    font-size: 2.2rem;
-    letter-spacing: 2px;
+.netpulse-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+}
+
+.netpulse-logo-icon {
+    width: 38px;
+    height: 38px;
+    margin-right: 0.7rem;
+    filter: drop-shadow(0 0 8px #5e81ac);
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    top: 10px; /* Adjust this value up or down for perfect centering */
+}
+
+.subtitle {
+    text-align: center;
+    color: #a0aec0;
+    margin-bottom: 2rem;
+    font-size: 1.15rem;
+    letter-spacing: 1px;
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.button-group button {
+    background: linear-gradient(90deg, #5e81ac 0%, #88c0d0 100%);
+    color: #23272e;
+    border: none;
+    border-radius: 10px;
+    padding: 0.7rem 1.5rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(94,129,172,0.15);
+    transition: background 0.2s, transform 0.1s;
+    outline: none;
+}
+
+.button-group button.active,
+.button-group button:hover {
+    background: linear-gradient(90deg, #88c0d0 0%, #5e81ac 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}
+
+#chartContainer {
+    margin: 0 auto;
+    background: #23272e;
+    border-radius: 14px;
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+    box-shadow: 0 2px 16px rgba(136,192,208,0.08);
+}
+
+.export-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.2rem;
+    margin-top: 1.7rem;
+}
+
+.export-buttons button {
+    background: linear-gradient(90deg, #a3be8c 0%, #ebcb8b 100%);
+    color: #23272e;
+    border: none;
+    border-radius: 10px;
+    padding: 0.6rem 1.4rem;
+    font-size: 1.08rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(163,190,140,0.10);
+    transition: background 0.2s, transform 0.1s;
+}
+
+.export-buttons button:hover {
+    background: linear-gradient(90deg, #ebcb8b 0%, #a3be8c 100%);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
 }
 
 body > main {

@@ -17,8 +17,9 @@ pub fn get_measurements(conn: &Connection, range: &str) -> Result<Vec<Measuremen
             "SELECT id, value, timestamp FROM measurements WHERE date(timestamp) = date('now') ORDER BY timestamp ASC",
             Vec::<&dyn rusqlite::ToSql>::new()
         ),
+        // Week: one per day
         "week" => (
-            "SELECT MIN(id) as id, AVG(value) as value, date(timestamp) as timestamp
+            "SELECT MIN(id) as id, AVG(value) as value, date(timestamp) || 'T00:00:00' as timestamp
              FROM measurements
              WHERE date(timestamp) >= date('now', '-6 days')
              GROUP BY date(timestamp)
@@ -26,8 +27,9 @@ pub fn get_measurements(conn: &Connection, range: &str) -> Result<Vec<Measuremen
             Vec::<&dyn rusqlite::ToSql>::new()
 
         ),
+        // Month: one per day
         "month" => (
-            "SELECT MIN(id) as id, AVG(value) as value, date(timestamp) as timestamp
+            "SELECT MIN(id) as id, AVG(value) as value, date(timestamp) || 'T00:00:00' as timestamp
              FROM measurements
              WHERE date(timestamp) >= date('now', 'start of month')
              GROUP BY date(timestamp)
@@ -35,10 +37,11 @@ pub fn get_measurements(conn: &Connection, range: &str) -> Result<Vec<Measuremen
             Vec::<&dyn rusqlite::ToSql>::new()
 
         ),
+        // Year: one per month
         "year" => (
-            "SELECT MIN(id) as id, AVG(value) as value, strftime('%Y-%m', timestamp) as timestamp
+            "SELECT MIN(id) as id, AVG(value) as value, strftime('%Y-%m-01T00:00:00', timestamp) as timestamp
              FROM measurements
-             WHERE date(timestamp) >= date('now', 'start of year')
+             WHERE date(timestamp) >= date('now', '-1 year')
              GROUP BY strftime('%Y-%m', timestamp)
              ORDER BY timestamp ASC",
             Vec::<&dyn rusqlite::ToSql>::new()
