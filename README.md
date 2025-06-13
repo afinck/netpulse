@@ -107,3 +107,70 @@ sudo apt install sqlite3 libsqlite3-dev
 curl -s https://install.speedtest.net/app/cli/install.deb.sh | sudo bash
 sudo apt install speedtest
 ```
+
+
+
+## 🚀 Raspberry Pi 4 (aarch64) Build & Install
+
+### 1. Build for Raspberry Pi 4 (aarch64/64-bit)
+
+If you want to build Netpulse for a 64-bit Raspberry Pi OS:
+
+```sh
+# On your PC or in CI:
+rustup target add aarch64-unknown-linux-gnu
+sudo apt-get install gcc-aarch64-linux-gnu
+cargo build --release --target=aarch64-unknown-linux-gnu
+# Or to build a .deb package:
+cargo install cargo-deb
+cargo deb --target=aarch64-unknown-linux-gnu
+```
+
+You can also use our [GitHub Actions workflow](.github/workflows/...) to automatically build `.deb` packages for aarch64.
+
+---
+
+### 2. Install Ookla Speedtest CLI
+
+Netpulse requires the Ookla Speedtest CLI.  
+**It is not available in the default Raspberry Pi OS repositories.**  
+Install it manually:
+
+```sh
+curl -Lo speedtest.tgz https://install.speedtest.net/app/cli/ookla-speedtest-1.2.0-linux-aarch64.tgz
+tar -xzf speedtest.tgz
+sudo mv speedtest /usr/local/bin/
+sudo chmod +x /usr/local/bin/speedtest
+rm speedtest.tgz
+```
+
+---
+
+## Other Installation Steps
+
+- Install `sqlite3`:
+  ```sh
+  sudo apt-get install sqlite3
+  ```
+
+- Install Netpulse `.deb` (replace with your actual file name):
+  ```sh
+  sudo apt install ./netpulse_0.1.0-1_aarch64.deb
+  ```
+
+---
+
+## Usage
+
+After installation, start Netpulse as usual:
+
+```sh
+netpulse
+```
+
+---
+
+## Notes
+
+- If you are using a 32-bit OS, use the `armv7-unknown-linux-gnueabihf` target and the corresponding Speedtest CLI download.
+- For more details, see the [full documentation](docs/).

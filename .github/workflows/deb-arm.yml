@@ -2,7 +2,7 @@ name: Build aarch64 DEB
 
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
   pull_request:
 
 jobs:
