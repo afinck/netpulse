@@ -14,4 +14,7 @@ chown www-data:www-data /var/log/netpulse
 # Example: Start the netpulse service (if applicable)
 # systemctl start netpulse.service
 
+#!/bin/sh
+echo "Please install the Ookla Speedtest CLI manually: https://www.speedtest.net/apps/cli"
+
 exit 0

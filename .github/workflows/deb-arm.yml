@@ -1,0 +1,31 @@
+name: Build aarch64 DEB
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust and cargo-deb
+        run: |
+          rustup target add aarch64-unknown-linux-gnu
+          cargo install cargo-deb
+
+      - name: Install cross toolchain
+        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Build DEB for aarch64
+        run: |
+          cargo build --release --target=aarch64-unknown-linux-gnu
+          cargo deb --target=aarch64-unknown-linux-gnu
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netpulse-aarch64-deb
+          path: target/aarch64-unknown-linux-gnu/debian/*.deb
