@@ -13,3 +13,6 @@ RUN set -eux; \
     rm /tmp/speedtest.tgz
 
 RUN rustup component add rustfmt
+
+# Install cargo-deb and cargo-rpm for packaging
+RUN cargo install cargo-deb cargo-rpm

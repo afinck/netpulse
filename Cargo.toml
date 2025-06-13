@@ -22,6 +22,8 @@ requires = ["glibc", "sqlite", "speedtest"]
 assets = [
     ["target/release/netpulse", "/usr/bin/netpulse", "755"]
 ]
+[package.metadata.rpm.targets]
+netpulse = {path = "/usr/bin/netpulse"}
 
 [dependencies]
 axum = { version = "0.6", features = ["tokio", "macros", "headers"] }
@@ -39,6 +41,7 @@ chrono = "0.4.41"
 
 [build-dependencies]
 cargo-deb = "1.36"
+cargo-rpm = "0.8.0"
 
 [[bin]]
 name = "generate_test_data"
