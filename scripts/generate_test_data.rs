@@ -1,5 +1,5 @@
-use rusqlite::{Connection, params};
 use chrono::{Duration, Local, Timelike};
+use rusqlite::{params, Connection};
 
 fn main() -> rusqlite::Result<()> {
     // Adjust the path to your database as needed

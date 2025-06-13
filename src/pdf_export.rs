@@ -1,10 +1,13 @@
 // filepath: /netpulse/netpulse/src/pdf_export.rs
-use std::io::Write;
 use printpdf::*;
-use std::io::{BufWriter, Cursor};
 use serde_json;
+use std::io::Write;
+use std::io::{BufWriter, Cursor};
 
-pub fn export_to_pdf(data: &serde_json::Value, _file_path: &str) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+pub fn export_to_pdf(
+    data: &serde_json::Value,
+    _file_path: &str,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
     let (doc, page1, layer1) = PdfDocument::new("Export", Mm(210.0), Mm(297.0), "Layer 1");
     let current_layer = doc.get_page(page1).get_layer(layer1);
 

@@ -11,3 +11,5 @@ RUN set -eux; \
     tar -xzf /tmp/speedtest.tgz -C /usr/local/bin speedtest; \
     chmod +x /usr/local/bin/speedtest; \
     rm /tmp/speedtest.tgz
+
+RUN rustup component add rustfmt

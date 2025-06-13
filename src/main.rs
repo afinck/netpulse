@@ -1,17 +1,17 @@
 // filepath: /netpulse/netpulse/src/main.rs
+use r2d2::Pool;
+use r2d2_sqlite::SqliteConnectionManager;
 use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::time::interval;
-use r2d2::Pool;
-use r2d2_sqlite::SqliteConnectionManager;
 
 mod measurements;
 mod pdf_export;
 mod utils;
 mod web;
 
-use web::handlers::{AppState, create_routes};
+use web::handlers::{create_routes, AppState};
 
 fn measure_bandwidth_speedtest() -> Option<f64> {
     let output = std::process::Command::new("speedtest")
@@ -33,23 +33,35 @@ fn measure_bandwidth_speedtest() -> Option<f64> {
 async fn main() {
     // Create a connection manager for SQLite
     let manager = SqliteConnectionManager::file("netpulse.db");
-    let pool = Pool::new(manager).expect("Failed to create connection pool");
+    let pool = Pool::new(manager).unwrap_or_else(|e| {
+        crate::utils::handle_error(&e);
+        std::process::exit(1);
+    });
 
     {
-        let conn = pool.get().expect("Failed to get DB connection");
-        conn.execute(
+        let conn = pool.get().unwrap_or_else(|e| {
+            crate::utils::handle_error(&e);
+            std::process::exit(1);
+        });
+        if let Err(e) = conn.execute(
             "CREATE TABLE IF NOT EXISTS measurements (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 value REAL NOT NULL,
                 timestamp TEXT NOT NULL
             )",
             [],
-        ).expect("Failed to create measurements table");
+        ) {
+            crate::utils::handle_error(&e);
+            std::process::exit(1);
+        }
 
-        conn.execute(
+        if let Err(e) = conn.execute(
             "CREATE INDEX IF NOT EXISTS idx_measurements_timestamp ON measurements(timestamp);",
             [],
-        ).expect("Failed to create index on measurements table");
+        ) {
+            crate::utils::handle_error(&e);
+            std::process::exit(1);
+        }
     }
 
     let state = Arc::new(AppState { db: pool });
@@ -64,12 +76,23 @@ async fn main() {
         loop {
             ticker.tick().await;
             if let Some(bandwidth) = measure_bandwidth_speedtest() {
-                // Save to DB (replace with your actual insert logic)
-                let conn = db_pool_clone.get().unwrap();
-                crate::measurements::insert_measurement(&conn, bandwidth).ok();
-                println!("Speedtest result saved: {} Mbit/s", bandwidth);
+                let conn = match db_pool_clone.get() {
+                    Ok(conn) => conn,
+                    Err(e) => {
+                        crate::utils::handle_error(&e);
+                        continue;
+                    }
+                };
+                if let Err(e) = crate::measurements::insert_measurement(&conn, bandwidth) {
+                    crate::utils::handle_error(&e);
+                } else {
+                    println!("Speedtest result saved: {} Mbit/s", bandwidth);
+                }
             } else {
-                eprintln!("Speedtest failed");
+                crate::utils::handle_error(&std::io::Error::new(
+                    std::io::ErrorKind::Other,
+                    "Speedtest failed",
+                ));
             }
         }
     });
@@ -82,8 +105,10 @@ async fn main() {
     println!("Listening on http://{}", addr);
 
     // Server starten
-    axum::Server::bind(&addr)
+    if let Err(e) = axum::Server::bind(&addr)
         .serve(app.into_make_service())
         .await
-        .unwrap();
+    {
+        crate::utils::handle_error(&e);
+    }
 }

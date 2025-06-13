@@ -1,8 +1,8 @@
 // filepath: /netpulse/netpulse/src/measurements.rs
-use rusqlite::params_from_iter;
-use r2d2_sqlite::rusqlite::{Connection, params};
-use serde::Serialize;
 use chrono::Local;
+use r2d2_sqlite::rusqlite::{params, Connection};
+use rusqlite::params_from_iter;
+use serde::Serialize;
 
 #[derive(Serialize)]
 pub struct Measurement {
@@ -11,7 +11,10 @@ pub struct Measurement {
     pub timestamp: String,
 }
 
-pub fn get_measurements(conn: &Connection, range: &str) -> Result<Vec<Measurement>, rusqlite::Error> {
+pub fn get_measurements(
+    conn: &Connection,
+    range: &str,
+) -> Result<Vec<Measurement>, rusqlite::Error> {
     let (query, params): (&str, Vec<&dyn rusqlite::ToSql>) = match range {
         "day" => (
             "SELECT id, value, timestamp FROM measurements WHERE date(timestamp) = date('now') ORDER BY timestamp ASC",

@@ -89,3 +89,21 @@ MIT
 
 - [Chart.js Documentation](https://www.chartjs.org/docs/latest/)
 - [jsPDF Documentation](https://github.com/parallax/jsPDF)
+
+---
+
+## System Dependencies
+
+Before running or packaging NetPulse, ensure these system packages are installed:
+
+- `sqlite3` and `libsqlite3-dev` (for SQLite database support)
+- `speedtest` (Ookla Speedtest CLI, for bandwidth measurement)
+
+On Debian/Ubuntu, install with:
+
+```sh
+sudo apt update
+sudo apt install sqlite3 libsqlite3-dev
+curl -s https://install.speedtest.net/app/cli/install.deb.sh | sudo bash
+sudo apt install speedtest
+```

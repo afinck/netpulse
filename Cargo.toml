@@ -1,7 +1,27 @@
 [package]
 name = "netpulse"
 version = "0.1.0"
-edition = "2024"
+authors = ["Andreas Finck <andreas.finck@icloud.com>"]
+edition = "2021"
+license = "MIT"
+description = "NetPulse is a bandwidth monitoring server written in Rust."
+
+[package.metadata.deb]
+maintainer = "Andreas Finck <andreas.finck@icloud.com>"
+assets = [
+    ["target/release/netpulse", "usr/bin/netpulse", "755"]
+]
+section = "net"
+priority = "optional"
+depends = "libc6 (>= 2.31), sqlite3, speedtest"
+
+[package.metadata.rpm]
+summary = "NetPulse bandwidth monitoring server"
+license = "MIT"
+requires = ["glibc", "sqlite", "speedtest"]
+assets = [
+    ["target/release/netpulse", "/usr/bin/netpulse", "755"]
+]
 
 [dependencies]
 axum = { version = "0.6", features = ["tokio", "macros", "headers"] }
@@ -19,7 +39,6 @@ chrono = "0.4.41"
 
 [build-dependencies]
 cargo-deb = "1.36"
-#cargo-rpm = "^0.1"
 
 [[bin]]
 name = "generate_test_data"
