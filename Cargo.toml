@@ -13,12 +13,13 @@ assets = [
 ]
 section = "net"
 priority = "optional"
-depends = "libc6 (>= 2.31), sqlite3, speedtest"
+depends = "libc6 (>= 2.31), sqlite3"
+maintainer-scripts = { postinst = "debian/postinst" }
 
 [package.metadata.rpm]
 summary = "NetPulse bandwidth monitoring server"
 license = "MIT"
-requires = ["glibc", "sqlite", "speedtest"]
+requires = ["glibc", "sqlite"]
 assets = [
     ["target/release/netpulse", "/usr/bin/netpulse", "755"]
 ]
