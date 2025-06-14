@@ -2,24 +2,21 @@
 use crate::measurements::get_measurements;
 use crate::pdf_export::convert_json_to_pdf;
 use crate::utils::{format_date, handle_error};
-use axum::{
-    extract::{Extension, Json, Query},
-    http::header,
-    response::{Html, IntoResponse, Response},
-    routing::get,
-    Router,
-};
 use r2d2::Pool;
 use r2d2_sqlite::SqliteConnectionManager;
 use std::collections::HashMap;
 use std::sync::Arc;
-use tower_http::services::ServeDir;
 use rust_embed::RustEmbed;
 use axum::{
     routing::get,
     extract::Path,
     response::{Response, IntoResponse},
     http::{StatusCode, header, HeaderMap, HeaderValue},
+    response::Html,
+    Extension,
+    extract::Query,
+    Json,
+    Router,
 };
 
 /// Shared application state, e.g. database connection pool
