@@ -16,6 +16,9 @@ jobs:
           rustup target add aarch64-unknown-linux-gnu
           cargo install cargo-deb cross
 
+      - name: Update cargo-deb
+        run: cargo install cargo-deb --force
+
       - name: Build with cross for aarch64
         run: |
           cross build --release --target=aarch64-unknown-linux-gnu
