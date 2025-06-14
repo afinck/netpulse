@@ -174,3 +174,25 @@ netpulse
 
 - If you are using a 32-bit OS, use the `armv7-unknown-linux-gnueabihf` target and the corresponding Speedtest CLI download.
 - For more details, see the [full documentation](docs/).
+
+---
+
+## Browser Compatibility & Security Notes
+
+NetPulse uses modern web technologies (Chart.js, jsPDF, HTML5 canvas) for chart rendering and export.  
+**Some privacy-focused browsers (such as LibreWolf or hardened Firefox) may block chart display or export features** due to strict security settings, especially when accessing the dashboard over HTTP (not HTTPS).
+
+**If you experience issues such as:**
+- The chart not displaying
+- Export Image/PDF not working
+- Console errors about "Blocked from extracting canvas data"
+
+**Try the following:**
+- Use a mainstream browser like Chromium or Chrome for best compatibility
+- Access the dashboard over HTTPS if possible
+- Ensure all resources are loaded from the same origin (no mixed content)
+- If using LibreWolf or hardened Firefox, consider relaxing certain privacy/security settings for your NetPulse dashboard
+
+For more information, see:
+- [MDN: CORS enabled image](https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image)
+- [Chart.js Browser Support](https://www.chartjs.org/docs/latest/getting-started/installation.html#browser-support)
