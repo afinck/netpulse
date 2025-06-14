@@ -5,6 +5,7 @@ authors = ["Andreas Finck <andreas.finck@icloud.com>"]
 edition = "2021"
 license = "MIT"
 description = "NetPulse is a bandwidth monitoring server written in Rust."
+default-run = "netpulse"
 
 [package.metadata.deb]
 maintainer = "Andreas Finck <andreas.finck@icloud.com>"
