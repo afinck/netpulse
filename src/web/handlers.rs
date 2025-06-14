@@ -18,6 +18,7 @@ use axum::{
     Json,
     Router,
 };
+use tower_http::cors::{CorsLayer, Any};
 
 /// Shared application state, e.g. database connection pool
 pub struct AppState {
@@ -112,10 +113,16 @@ async fn static_handler(Path(path): Path<String>) -> impl IntoResponse {
 }
 
 pub fn create_routes(state: Arc<AppState>) -> Router {
+    let cors = CorsLayer::new()
+        .allow_origin(Any)
+        .allow_methods(Any)
+        .allow_headers(Any);
+
     Router::new()
         .route("/", get(dashboard_handler))
         .route("/measurements", get(measurements_handler))
         .route("/export/pdf", get(pdf_export_handler))
         .route("/static/*path", get(static_handler))
         .layer(Extension(state))
+        .layer(cors)
 }
