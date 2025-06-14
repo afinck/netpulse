@@ -44,10 +44,6 @@ tower-http = { version = "0.4", features = ["fs"] }
 chrono = "0.4.41"
 openssl = { version = "0.10", features = ["vendored"] }
 
-[build-dependencies]
-cargo-deb = "1.36"
-cargo-rpm = "0.8.0"
-
 [[bin]]
 name = "generate_test_data"
 path = "scripts/generate_test_data.rs"
