@@ -1,4 +1,4 @@
-name: Build aarch64 DEB with cross
+name: Build aarch64 Binary
 
 on:
   push:
@@ -11,22 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust and cargo-deb
+      - name: Install Rust
         run: |
           rustup target add aarch64-unknown-linux-gnu
-          cargo install cargo-deb cross
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
 
-      - name: Update cargo-deb
-        run: cargo install cargo-deb --force
-
-      - name: Check cargo-deb version
-        run: cargo deb --version
-
-      - name: Build DEB
-        run: cargo deb --target=aarch64-unknown-linux-gnu
-
-      - name: Upload DEB artifact
+      - name: Build for aarch64
+        run: |
+          cargo build --release --target=aarch64-unknown-linux-gnu
+          
+      - name: Upload binary
         uses: actions/upload-artifact@v4
         with:
-          name: netpulse-aarch64-deb
-          path: target/aarch64-unknown-linux-gnu/debian/*.deb
+          name: netpulse-aarch64
+          path: target/aarch64-unknown-linux-gnu/release/netpulse
