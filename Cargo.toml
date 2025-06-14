@@ -16,7 +16,7 @@ section = "net"
 priority = "optional"
 depends = ["libc6 (>= 2.31)", "sqlite3"]
 
-[package.metadata.deb.maintainer-scripts]
+[package.metadata.deb.scripts]
 postinst = "debian/postinst"
 
 [package.metadata.rpm]
