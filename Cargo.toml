@@ -14,7 +14,7 @@ assets = [
 ]
 section = "net"
 priority = "optional"
-depends = "libc6 (>= 2.31), sqlite3"
+depends = ["libc6 (>= 2.31)", "sqlite3"]
 
 [package.metadata.deb.maintainer-scripts]
 postinst = "debian/postinst"
