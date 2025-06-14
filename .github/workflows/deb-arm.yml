@@ -37,7 +37,7 @@ jobs:
           path: target/aarch64-unknown-linux-gnu/release/netpulse
 
       - name: Upload DEB artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: netpulse-arm64-deb (aarch64 - rapsberry pi)
+          name: netpulse-arm64-deb
           path: target/debian/*.deb
