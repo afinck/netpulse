@@ -113,55 +113,7 @@ document.addEventListener('DOMContentLoaded', function() {
         dateLabelDiv.textContent = '';
     }
 });
-
-/*     // Add this for the Download Chart button
-    const downloadBtn = document.getElementById('downloadChart');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', function() {
-            if (chartInstance) {
-                const link = document.createElement('a');
-                link.href = chartInstance.toBase64Image({ type: 'image/jpeg', quality: 1.0, pixelRatio: 2 }); // pixelRatio for sharpness
-                link.download = 'chart.jpg';
-                link.click();
-            } else {
-                alert('Please generate the chart first.');
-            }
-        });
-    } */
-
-/*     // Add this for the Export Chart as PDF button
-    const exportChartBtn = document.getElementById('exportChartPdf');
-    if (exportChartBtn) {
-        exportChartBtn.addEventListener('click', function() {
-            if (chartInstance) {
-                const imgData = chartInstance.toBase64Image();
-                const pdf = new window.jspdf.jsPDF();
-                pdf.addImage(imgData, 'JPEG', 10, 10, 180, 100); // adjust size/position as needed
-                pdf.save('chart.pdf');
-            } else {
-                alert('Please generate the chart first.');
-            }
-        });
-    }
-
-    document.getElementById('downloadChart').addEventListener('click', function() {
-        if (chartInstance) {
-            // Get the canvas element
-            const canvas = chartInstance.canvas;
-            
-            // Convert canvas to JPEG explicitly
-            const jpegUrl = canvas.toDataURL('image/jpeg', 1.0);
-            
-            // Create download link
-            const link = document.createElement('a');
-            link.href = jpegUrl;
-            link.download = 'chart.jpg';
-            link.click();
-        } else {
-            alert('Please generate the chart first.');
-        }
-    }); */
-
+// Event listeners for download and export buttons
 document.getElementById('downloadChart').addEventListener('click', function(e) {
     if (window.chartInstance) {
         try {
