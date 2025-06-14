@@ -15,7 +15,7 @@ assets = [
 section = "net"
 priority = "optional"
 depends = ["libc6 (>= 2.31)", "sqlite3"]
-scripts = { postinst = "debian/postinst"}
+maintainer-scripts = { postinst = "debian/postinst"}
 
 [package.metadata.rpm]
 summary = "NetPulse bandwidth monitoring server"
