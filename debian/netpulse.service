@@ -1,0 +1,16 @@
+[Unit]
+Description=NetPulse Bandwidth Monitoring Server
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/netpulse
+Restart=on-failure
+User=netpulse
+Group=netpulse
+WorkingDirectory=/var/lib/netpulse
+Environment=RUST_LOG=info
+Environment=NETPULSE_DB_PATH=/var/lib/netpulse/netpulse.db
+
+[Install]
+WantedBy=multi-user.target

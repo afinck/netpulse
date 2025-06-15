@@ -1,0 +1,9 @@
+Package: netpulse
+Version: 0.1.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Depends: rustc, cargo, libsqlite3-dev, axum, printpdf
+Maintainer: "Andreas Finck <andreas.finck@icloud.com>"
+Description: A backend application for handling measurements and data storage using SQLite, serving a web dashboard with axum, and supporting PDF export.
+ This application includes a simple HTML/JS frontend for graphs using Chart.js and is set up for packaging as DEB and RPM with all dependencies included.

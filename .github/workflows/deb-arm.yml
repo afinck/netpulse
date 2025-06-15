@@ -1,0 +1,46 @@
+name: Build aarch64 Binary
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        run: |
+          rustup target add aarch64-unknown-linux-gnu
+          sudo apt-get update
+          sudo apt-get install -y gcc-aarch64-linux-gnu
+
+      - name: Install cross
+        run: cargo install cross --force
+
+      - name: Install cargo-deb
+        run: cargo install cargo-deb --force
+
+      - name: Build for aarch64
+        run: |
+          cross build --release --target=aarch64-unknown-linux-gnu
+          
+      - name: Package DEB for ARM
+        run: |
+          mkdir -p target/release
+          cp target/aarch64-unknown-linux-gnu/release/netpulse target/release/netpulse
+          cargo deb --no-build --target=aarch64-unknown-linux-gnu
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: netpulse-aarch64
+          path: target/aarch64-unknown-linux-gnu/release/netpulse
+
+      - name: Upload DEB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: netpulse-arm64-deb
+          path: target/debian/*.deb

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+# This script is executed after the package is installed.
+# You can add any post-installation commands here.
+
+# Create user and group if not exist
+if ! id netpulse >/dev/null 2>&1; then
+    adduser --system --group --no-create-home netpulse
+fi
+# Create working directory
+install -d -o netpulse -g netpulse /var/lib/netpulse
+# Enable and start service
+systemctl daemon-reload
+systemctl enable netpulse.service
+systemctl start netpulse.service
+
+#!/bin/sh
+echo "Please install the Ookla Speedtest CLI manually: https://www.speedtest.net/apps/cli"
+
+exit 0

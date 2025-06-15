@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>NetPulse Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/svg+xml" href="/static/favicon.svg">
+</head>
+<body>
+    <div class="center-container">
+        <div class="card">
+            <div class="netpulse-logo">
+                <svg class="netpulse-logo-icon" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="15" fill="#5e81ac" stroke="#88c0d0" stroke-width="2"/>
+                    <polyline points="6,18 12,12 16,22 20,10 26,18" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h1>NetPulse</h1>
+            </div>
+            <div class="subtitle">Bandwidth Monitoring Dashboard</div>
+            <div class="button-group">
+                <button class="range-btn active" data-range="day">Day</button>
+                <button class="range-btn" data-range="week">Week</button>
+                <button class="range-btn" data-range="month">Month</button>
+                <button class="range-btn" data-range="year">Year</button>
+            </div>
+            <div id="chartContainer"></div>
+            <div class="export-buttons">
+                <button id="downloadChart">Export Image</button>
+                <button id="exportChartPdf">Export PDF</button>
+            </div>
+        </div>
+    </div>
+    <script src="/static/chart.min.js"></script>
+    <script src="/static/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

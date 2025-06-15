@@ -1,0 +1,45 @@
+name: Build and Release x86_64 DEB and RPM
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        run: |
+          rustup update stable
+          rustup default stable
+
+      - name: Install packaging tools
+        run: |
+          cargo install cargo-deb --force
+          cargo install cargo-rpm --force
+
+      - name: Build release binary
+        run: cargo build --release
+
+      - name: Build DEB package
+        run: cargo deb --no-build
+
+      - name: Build RPM package
+        run: cargo rpm build
+
+      - name: Upload DEB to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/debian/*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload RPM to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/release/rpmbuild/RPMS/**/*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

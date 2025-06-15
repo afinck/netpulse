@@ -1,0 +1,56 @@
+[package]
+name = "netpulse"
+version = "0.1.0"
+authors = ["Andreas Finck <andreas.finck@icloud.com>"]
+edition = "2021"
+license = "MIT"
+description = "NetPulse is a bandwidth monitoring server written in Rust."
+default-run = "netpulse"
+
+[package.metadata.deb]
+maintainer = "Andreas Finck <andreas.finck@icloud.com>"
+assets = [
+    ["target/release/netpulse", "usr/bin/netpulse", "755"],
+    ["debian/netpulse.service", "lib/systemd/system/netpulse.service", "644"]
+]
+section = "net"
+priority = "optional"
+depends = ["libc6 (>= 2.31)", "sqlite3"]
+maintainer-scripts = "debian/scripts/"
+
+[package.metadata.rpm]
+summary = "NetPulse bandwidth monitoring server"
+license = "MIT"
+requires = ["glibc", "sqlite"]
+assets = [
+    ["target/release/netpulse", "/usr/bin/netpulse", "755"],
+    ["rpm/netpulse.service", "/lib/systemd/system/netpulse.service", "644"]
+]
+[package.metadata.rpm.maintainer-scripts]
+post = "rpm/postinst"
+
+[package.metadata.rpm.targets]
+netpulse = {path = "/usr/bin/netpulse"}
+
+[dependencies]
+axum = { version = "0.6", features = ["tokio", "macros", "headers"] }
+tokio = { version = "1", features = ["full"] }
+printpdf = "0.7"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1.0"
+plotly = "0.5"     # or the appropriate version for your project
+rusqlite = { version = "0.31", features = ["bundled"] }
+r2d2 = "0.8"
+r2d2_sqlite = "0.24"
+reqwest = { version = "0.11", features = [ "json", "blocking", "rustls-tls"]}
+tower-http = { version = "0.4", features = ["cors", "fs"] }
+chrono = "0.4.41"
+openssl = { version = "0.10", features = ["vendored"] }
+rust-embed = "6.8.1"
+mime_guess = "2.0"
+syslog = "6"
+log = "0.4"
+
+[[bin]]
+name = "generate_test_data"
+path = "scripts/generate_test_data.rs"
